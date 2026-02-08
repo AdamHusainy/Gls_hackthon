@@ -1,0 +1,254 @@
+/* NAVBAR */
+.navbar {
+    position: fixed;
+    /* Fixed instead of sticky for smart hide/show */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 18px 60px;
+
+    /* White background as requested */
+    background: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+    /* Subtle border for separation */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+}
+
+.navbar.nav-hidden {
+    transform: translateY(-100%);
+}
+
+.navbar.nav-visible {
+    transform: translateY(0);
+}
+
+.navbar.nav-scrolled {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* Home Page Navbar Specifics */
+.navbar.home-nav {
+    background: transparent;
+    border-bottom: none;
+    box-shadow: none;
+}
+
+.navbar.home-nav.nav-scrolled {
+    background: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #0f172a;
+}
+
+.logo-icon {
+    font-weight: 900;
+    color: #fa5e2a;
+    /* Orange accent */
+    font-size: 20px;
+}
+
+.nav-center {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+    font-weight: 600;
+    /* Bolder font for links */
+}
+
+.nav-center li {
+    cursor: pointer;
+    font-size: 13px;
+    color: #1e293b;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.nav-center li:hover {
+    color: #000;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    /* For absolute positioning of dropdown */
+}
+
+.nav-btn {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.2s;
+}
+
+.nav-btn:hover {
+    transform: translateY(-2px);
+}
+
+.menu-btn {
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #334155;
+    /* Removed background and border-radius */
+}
+
+.menu-circle {
+    width: 32px;
+    height: 32px;
+    background: #f1f5f9;
+    /* Light grey circle */
+    border-radius: 50%;
+}
+
+/* DROPDOWN MENU */
+.dropdown-menu {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    width: 280px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    padding: 0 0 10px 0;
+    border: 1px solid #f1f5f9;
+    overflow: hidden;
+    animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-header {
+    padding: 20px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.user-info h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+}
+
+.user-info p {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0 0 16px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.coins-badge {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #475569;
+}
+
+.coin-count {
+    background: #f97316;
+    /* Orange */
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.dropdown-list {
+    list-style: none;
+    padding: 10px 0;
+    margin: 0;
+}
+
+.dropdown-list li {
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #334155;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.dropdown-list li:hover {
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.list-item-content {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
+
+.list-item-content span:first-child {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.badge-blue {
+    background: #3b82f6;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+@media (max-width: 900px) {
+    .nav-center {
+        display: none;
+    }
+
+    .navbar {
+        padding: 16px 20px;
+    }
+}
