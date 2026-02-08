@@ -60,6 +60,8 @@ export default function Navbar() {
         };
     }, []);
 
+    if (location.pathname === '/ai-mentors') return null;
+
     return (
         <nav className={`navbar ${showNavbar ? 'nav-visible' : 'nav-hidden'} ${scrolled ? 'nav-scrolled' : ''} ${!isExplorePage ? 'home-nav' : ''}`}>
             <div className="nav-left">
@@ -70,7 +72,7 @@ export default function Navbar() {
 
             <ul className="nav-center">
                 <li onClick={() => navigate('/explore')}>Explore Mentors</li>
-                <li>AI Mentors</li>
+                <li onClick={() => navigate('/ai-mentors')}>AI Mentors</li>
                 <li>Success Stories</li>
             </ul>
 
