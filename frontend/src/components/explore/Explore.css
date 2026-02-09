@@ -10,7 +10,8 @@
 .explore-container {
     display: flex;
     max-width: 1400px;
-    margin: 0 auto;
+    margin: 80px auto 0;
+    /* Added top margin to clear fixed navbar */
     padding: 20px;
     gap: 30px;
     flex: 1;
@@ -522,6 +523,1267 @@
     background: #0f172a;
     color: #fff;
     border-color: #0f172a;
+}
+
+/* =========================================
+   MENTOR PROFILE SLIDE-IN SIDEBAR
+   ========================================= */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    /* Just below sidebar */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.sidebar-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* --- TOP CONTROLS --- */
+.ms-top-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: #f8fafc;
+}
+
+.ms-close-icon {
+    font-size: 24px;
+    cursor: pointer;
+    color: #475569;
+}
+
+.ms-new-tab-link {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.mentor-sidebar {
+    position: fixed;
+    top: 0;
+    right: -950px;
+    /* Offset for wider bar */
+    width: 900px;
+    /* Width per request */
+    height: 100vh;
+    background: #f8fafc;
+    /* Subtle gray background for card separation */
+    z-index: 9999;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.mentor-sidebar.open {
+    right: 0;
+}
+
+.ms-scroll-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 20px;
+}
+
+.ms-content-wrapper {
+    padding: 0 30px;
+}
+
+/* --- CARD COMMON --- */
+.ms-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    /* Subtle shadow per screenshot */
+    margin-bottom: 20px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+/* --- 1. PROFILE CARD STYLE --- */
+.profile-card {
+    padding-bottom: 30px;
+}
+
+.ms-card-banner {
+    height: 160px;
+    background: linear-gradient(120deg, #a78bfa, #60a5fa);
+    width: 100%;
+}
+
+.ms-card-body {
+    padding: 0 30px;
+    position: relative;
+}
+
+.ms-avatar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: -60px;
+    /* Avatar overlap */
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.ms-main-avatar {
+    padding: 5px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.ms-main-avatar img {
+    width: 130px;
+    height: 130px;
+    border-radius: 16px;
+    object-fit: cover;
+    display: block;
+}
+
+.ms-header-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.ms-icon-btn,
+.ms-action-btn {
+    padding: 8px 16px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    color: #1e293b;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ms-icon-btn {
+    padding: 0;
+    width: 44px;
+}
+
+.ms-person-details {
+    display: flex;
+    gap: 40px;
+}
+
+.ms-pd-left {
+    flex: 2;
+}
+
+.ms-pd-right {
+    flex: 1;
+    padding-top: 10px;
+}
+
+.ms-name-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.ms-name-row h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.ms-star-badge {
+    background: #fffbeb;
+    color: #b45309;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #fcd34d;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.ms-role-title {
+    font-size: 16px;
+    color: #0f172a;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.ms-bio-text {
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.ms-stats-bar {
+    display: flex;
+    gap: 24px;
+}
+
+.stat-item {
+    font-size: 14px;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Right Column (Experience) */
+.exp-label {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.exp-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.exp-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #334155;
+    font-weight: 500;
+}
+
+.exp-logo {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.exp-logo-ph {
+    width: 24px;
+    height: 24px;
+    background: #e2e8f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+
+/* --- REFINED BOOKING CARD (Image 571-0.png) --- */
+.booking-card-refined {
+    display: flex;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.bcr-left {
+    width: 35%;
+    background: #f8fafc;
+    /* Light blue-gray per image */
+    padding: 30px;
+    border-right: 1px solid #f1f5f9;
+}
+
+.bcr-profile-mini {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.bcr-profile-mini img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bcr-profile-mini h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.bcr-profile-mini p {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0;
+}
+
+.bcr-cta {
+    font-size: 16px;
+    color: #2563eb;
+    line-height: 1.5;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+.bcr-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.bcr-info-item svg {
+    margin-top: 3px;
+    font-size: 16px;
+    color: #64748b;
+}
+
+.bcr-right {
+    flex: 1;
+    padding: 30px;
+    position: relative;
+    background: #fff;
+}
+
+.bcr-dates-section h3,
+.bcr-slots-section h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 16px;
+}
+
+.bcr-dates-grid {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.bcr-date-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    width: 90px;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.2s;
+}
+
+.bcr-date-card:hover {
+    border-color: #cbd5e1;
+}
+
+.bcr-date-card.active {
+    border-color: #3b82f6;
+    background: #fff;
+    /* Keep white bg, maybe subtle tint? Image looks white */
+}
+
+.bcr-date-card h4 {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #64748b;
+    margin: 0 0 6px 0;
+    font-weight: 600;
+}
+
+.bcr-date-card h3 {
+    font-size: 18px;
+    color: #0f172a;
+    margin: 0 0 6px 0;
+    font-weight: 700;
+}
+
+.bcr-date-card .slots-count {
+    font-size: 11px;
+    color: #10b981;
+    font-weight: 600;
+}
+
+.bcr-date-card .rec-tag {
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    color: #3b82f6;
+    border: 1px solid #3b82f6;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.bcr-separator {
+    height: 1px;
+    background: #e2e8f0;
+    margin-bottom: 30px;
+}
+
+.bcr-slots-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.bcr-slot-nav button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #0f172a;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.bcr-slots-grid {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.bcr-slot-pill {
+    padding: 10px 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+    cursor: pointer;
+    position: relative;
+    background: #fff;
+}
+
+.bcr-slot-pill.active {
+    background: #fff;
+    border-color: #3b82f6;
+    color: #0f172a;
+    /* Text stays dark? Image 571-0.png shows "06:00 PM" dark text with blue border */
+}
+
+.rec-tag-slot {
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    color: #3b82f6;
+    border: 1px solid #3b82f6;
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+    }
+
+    50% {
+        left: 100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+.bcr-book-btn {
+    width: 100%;
+    background: #007bff;
+    /* Full blue per request */
+    color: #fff;
+    border: none;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.bcr-book-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transform: skewX(-20deg);
+    animation: shine 3s infinite;
+}
+
+/* --- REFINED SECTIONS (Common) --- */
+.ms-section-card {
+    padding: 30px;
+}
+
+.ms-section-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 16px;
+}
+
+/* --- REFINED ABOUT --- */
+.ms-divider-line {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 24px 0;
+}
+
+.ms-about-text {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.7;
+    margin-bottom: 0;
+}
+
+.ms-info-grid {
+    display: flex;
+    gap: 60px;
+}
+
+/* Increased gap */
+
+/* --- REFINED TIMELINE (Image 571-2.png) --- */
+.timeline-refined {
+    margin-top: 30px;
+}
+
+.tr-item {
+    display: flex;
+    position: relative;
+    padding-bottom: 40px;
+    /* Space between items */
+}
+
+.tr-item:last-child {
+    padding-bottom: 0;
+}
+
+.tr-left {
+    width: 140px;
+    /* Wider for left-aligned dates */
+    text-align: right;
+    padding-right: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.tr-role {
+    font-weight: 600;
+    font-size: 13px;
+    color: #0f172a;
+}
+
+.tr-date {
+    font-size: 13px;
+    color: #0f172a;
+}
+
+/* Darker text per image */
+.tr-duration {
+    font-size: 11px;
+    color: #3b82f6;
+    /* Blue duration text per image */
+    font-weight: 500;
+    background: #eff6ff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 4px;
+}
+
+.tr-divider {
+    position: relative;
+    width: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.tr-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    background: #e2e8f0;
+    z-index: 1;
+}
+
+/* Mask line for last item if needed, but flex handles it? No, line spans full height, last item needs masking or just short line */
+.tr-item:last-child .tr-line {
+    display: none;
+}
+
+/* Or partial height */
+
+.tr-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    /* Default gray dot */
+    z-index: 2;
+    margin-top: 4px;
+    /* Align with top text roughly */
+    border: 3px solid #fff;
+    /* White ring effect? */
+    box-shadow: 0 0 0 1px #e2e8f0;
+    /* Outer border */
+}
+
+.tr-dot.active {
+    background: #fff;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 4px #e2e8f0;
+    /* Ring style? Or simple circle. Image shows hollow-ish. */
+}
+
+/* Let's try to match image: gray circle. Current 'Present' one is white with gray ring? */
+/* Image 571-2.png shows:
+   - "Present/Nov 2020": Dot looks like a large white circle with thick gray border.
+   - Others: Solid gray dots. */
+
+.tr-right {
+    flex: 1;
+    padding-left: 20px;
+    padding-top: 0;
+}
+
+.tr-right h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 8px 0;
+}
+
+.tr-company {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #475569;
+}
+
+.logo-ph-red {
+    background: #b91c1c;
+    color: #fff;
+    padding: 4px;
+    border-radius: 50%;
+    font-size: 10px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tr-edu {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: #0f172a;
+    line-height: 1.5;
+}
+
+.edu-icon {
+    margin-top: 3px;
+    color: #0f172a;
+}
+
+
+/* --- REFINED SKILLS (Image 571-3.png) --- */
+.ms-skills-cloud-refined {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.skill-pill-refined {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    /* Fully rounded pill */
+    font-size: 14px;
+    color: #0f172a;
+    font-weight: 500;
+}
+
+.skill-pill-refined svg {
+    font-size: 16px;
+}
+
+/* Custom icons based on image observation */
+.icon-dsa {
+    color: #3b82f6;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Placeholder */
+
+/* --- 2. BOOKING CARD STYLE --- */
+.booking-card {
+    display: none;
+}
+
+.bc-left {
+    display: none;
+}
+
+.bc-right {
+    display: none;
+}
+
+.bc-mini-profile {
+    display: none;
+}
+
+.bc-mini-profile img {
+    display: none;
+}
+
+.bc-mini-profile h4 {
+    display: none;
+}
+
+.bc-mini-profile p {
+    display: none;
+}
+
+.bc-cta-text {
+    display: none;
+}
+
+.bc-info-row {
+    display: none;
+}
+
+/* Dates Grid */
+.bc-right h3 {
+    display: none;
+}
+
+.bc-dates-grid {
+    display: none;
+}
+
+.bc-date-card {
+    display: none;
+}
+
+.bc-date-card.active {
+    display: none;
+}
+
+.bc-date-card h4 {
+    display: none;
+}
+
+.bc-date-card h3 {
+    display: none;
+}
+
+.slots-count {
+    display: none;
+}
+
+.rec-tag {
+    display: none;
+}
+
+/* Cleanup Old Styles if conflict */
+/* Resetting some old classes to be safe or empty if not used to avoid clutter,
+   but keeping generic utility classes */
+.ms-close-btn {
+    display: none;
+}
+
+/* Replaced by ms-top-controls */
+.ms-content {
+    display: none;
+}
+
+/* Replaced by ms-content-wrapper */
+.ms-banner {
+    display: none;
+}
+
+/* Replaced by ms-card-banner */
+.ms-profile-info {
+    display: none;
+}
+
+/* Replaced by ms-card-body */
+.ms-avatar-container {
+    display: none;
+}
+
+/* Replaced by ms-main-avatar */
+.ms-avatar {
+    display: none;
+}
+
+/* Replaced by ms-main-avatar img */
+.ms-name {
+    display: none;
+}
+
+/* Replaced by ms-name-row h2 */
+.ms-role {
+    display: none;
+}
+
+/* Replaced by ms-role-title */
+.ms-stats-row {
+    display: none;
+}
+
+/* Replaced by ms-stats-bar */
+.ms-stat {
+    display: none;
+}
+
+/* Replaced by stat-item */
+.ms-stat-val {
+    display: none;
+}
+
+.ms-stat-label {
+    display: none;
+}
+
+.ms-bio-short {
+    display: none;
+}
+
+/* Replaced by ms-bio-text */
+.booking-section {
+    display: none;
+}
+
+/* Replaced by booking-card */
+.ms-booking-card {
+    display: none;
+}
+
+/* Replaced by booking-card */
+.ms-booking-header {
+    display: none;
+}
+
+/* Replaced by bc-mini-profile */
+.ms-tiny-avatar {
+    display: none;
+}
+
+/* Replaced by bc-mini-profile img */
+.ms-promo-text {
+    display: none;
+}
+
+/* Replaced by bc-cta-text */
+.ms-booking-features {
+    display: none;
+}
+
+/* Replaced by bc-info-row */
+.bf-item {
+    display: none;
+}
+
+/* Replaced by bc-info-row */
+.ms-dates-carousel {
+    display: none;
+}
+
+/* Replaced by bc-dates-grid */
+.c-dates-row {
+    display: none;
+}
+
+/* Replaced by bc-dates-grid */
+.c-date-card {
+    display: none;
+}
+
+/* Replaced by bc-date-card h4/h3 */
+.d-text {
+    display: none;
+}
+
+/* Replaced by slots-count */
+.d-slots {
+    display: none;
+}
+
+/* Replaced by rec-tag */
+.rec-badge {
+    display: none;
+}
+
+/* No direct replacement, structure changed */
+.ms-slots-grid {
+    display: none;
+}
+
+/* No direct replacement, structure changed */
+.c-slots-row {
+    display: none;
+}
+
+/* No direct replacement, structure changed */
+.c-slot-card {
+    display: none;
+}
+
+/* Replaced by sticky footer buttons */
+.ms-book-btn {
+    display: none;
+}
+
+
+/* --- 3. ABOUT SECTION --- */
+.ms-about-text {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.ms-info-grid {
+    display: flex;
+    gap: 40px;
+}
+
+.mi-col h4 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #1e293b;
+}
+
+.mi-box {
+    border: 1px solid #e2e8f0;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #334155;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mi-tags {
+    display: flex;
+    gap: 8px;
+}
+
+.mi-tag {
+    border: 1px solid #e2e8f0;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #334155;
+}
+
+/* --- 4. JOURNEY SECTION --- */
+.timeline {
+    position: relative;
+    padding-left: 20px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 110px;
+    top: 5px;
+    bottom: 5px;
+    width: 2px;
+    background: #e2e8f0;
+}
+
+.timeline-item {
+    display: flex;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.tl-left {
+    width: 100px;
+    text-align: right;
+    padding-right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tl-current {
+    font-weight: 600;
+    font-size: 13px;
+    color: #1e293b;
+}
+
+.tl-date {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.tl-duration {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.tl-dot {
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border: 3px solid #cbd5e1;
+    border-radius: 50%;
+    position: absolute;
+    left: 105px;
+    top: 0;
+    z-index: 1;
+}
+
+.timeline-item:first-child .tl-dot {
+    border-color: #3b82f6;
+}
+
+.tl-right {
+    padding-left: 20px;
+    flex: 1;
+}
+
+.tl-right h4 {
+    font-size: 15px;
+    margin: 0 0 6px 0;
+    color: #1e293b;
+}
+
+.tl-company {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #475569;
+}
+
+.company-logo-ph {
+    width: 20px;
+    height: 20px;
+    background: #e11d48;
+    color: #fff;
+    font-size: 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tl-education {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: #1e293b;
+    line-height: 1.5;
+}
+
+/* --- 5. SKILLS SECTION --- */
+.ms-skills-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.skill-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    /* Pill shape */
+    background: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1e293b;
+    transition: border-color 0.2s;
+}
+
+.skill-pill:hover {
+    border-color: #cbd5e1;
+}
+
+.skill-pill svg {
+    font-size: 18px;
+}
+
+.ms-skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ms-skill-chip {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* --- STICKY FOOTER --- */
+.ms-sticky-footer {
+    flex-shrink: 0;
+    background: #1e1e1e;
+    /* Dark theme as per screenshot */
+    padding: 16px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #fff;
+    border-top: 1px solid #333;
+    position: relative;
+    overflow: hidden;
+}
+
+.ms-sticky-footer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 30%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    transform: skewX(-20deg);
+    animation: shine 5s infinite;
+    pointer-events: none;
+}
+
+.sf-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.sf-label {
+    font-size: 12px;
+    color: #a1a1aa;
+}
+
+.sf-price {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+}
+
+
+
+.sf-avail-badge {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid #059669;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pulsing-dot {
+    width: 6px;
+    height: 6px;
+    background: #34d399;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+    animation: pulse-green 2s infinite;
+}
+
+.sf-right {
+    display: flex;
+    gap: 12px;
+}
+
+.sf-btn-outline {
+    background: transparent;
+    border: 1px solid #525252;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sf-btn-outline:hover {
+    border-color: #fff;
+}
+
+.sf-btn-primary {
+    background: #2563eb;
+    border: none;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.sf-btn-primary:hover {
+    background: #1d4ed8;
 }
 
 /* Custom Select */

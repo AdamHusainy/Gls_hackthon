@@ -4,6 +4,7 @@ import Footer from '../footer/Footer';
 import './Explore.css';
 import { FaSearch, FaChevronDown, FaBriefcase, FaStar, FaTrophy, FaChevronRight, FaTimes, FaCrown, FaArrowRight, FaMapMarkerAlt, FaCommentAlt, FaRegClock } from "react-icons/fa";
 import { BsCheckCircleFill } from "react-icons/bs";
+import MentorProfileSidebar from './MentorProfileSidebar';
 
 export default function Explore() {
     const filters = {
@@ -42,7 +43,7 @@ export default function Explore() {
             targetDomains: ["Frontend Developer"],
             plans: {
                 "1 Month": { price: 10000, currency: "₹", total: 10000 },
-                "3 Months": { price: 10000, currency: "₹", total: 30000, discount: "" },
+                "3 Month": { price: 10000, currency: "₹", total: 30000, discount: "" },
                 "6 Months": { price: 10000, currency: "₹", total: 60000, discount: "" }
             },
             nextAvailable: "Tomorrow, 07:00 PM"
@@ -71,7 +72,7 @@ export default function Explore() {
             targetDomains: ["Frontend Developer", "Backend Developer"],
             plans: {
                 "1 Month": { price: 15000, currency: "₹", total: 15000 },
-                "3 Months": { price: 15000, currency: "₹", total: 45000 },
+                "3 Month": { price: 15000, currency: "₹", total: 45000 },
                 "6 Months": { price: 15000, currency: "₹", total: 90000 }
             },
             nextAvailable: "Sat Feb 14 2026"
@@ -101,7 +102,7 @@ export default function Explore() {
             targetDomains: ["Frontend Developer"],
             plans: {
                 "1 Month": { price: 2500, currency: "₹", total: 2500 },
-                "3 Months": { price: 2500, currency: "₹", total: 7500, discount: "Extra 40% OFF" },
+                "3 Month": { price: 2500, currency: "₹", total: 7500, discount: "Extra 40% OFF" },
                 "6 Months": { price: 2500, currency: "₹", total: 15000 }
             },
             nextAvailable: "Tomorrow, 04:00 AM"
@@ -131,7 +132,7 @@ export default function Explore() {
             targetDomains: ["Fullstack Developer"],
             plans: {
                 "1 Month": { price: 5000, currency: "₹", total: 5000 },
-                "3 Months": { price: 5000, currency: "₹", total: 15000, discount: "Extra 30% OFF" },
+                "3 Month": { price: 5000, currency: "₹", total: 15000, discount: "Extra 30% OFF" },
                 "6 Months": { price: 5000, currency: "₹", total: 30000 }
             },
             nextAvailable: "Sat Feb 14 2026"
@@ -141,9 +142,24 @@ export default function Explore() {
     const [showModal, setShowModal] = useState(false);
     const [selectedMentorForTrial, setSelectedMentorForTrial] = useState(null);
 
-    const openTrialModal = (mentor) => {
+    // Sidebar State
+    const [sidebarMentor, setSidebarMentor] = useState(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    const openTrialModal = (mentor, e) => {
+        if (e) e.stopPropagation(); // Prevent Sidebar from opening if clicking Book directly
         setSelectedMentorForTrial(mentor);
         setShowModal(true);
+    };
+
+    const openSidebar = (mentor) => {
+        setSidebarMentor(mentor);
+        setIsSidebarOpen(true);
+    };
+
+    const closeSidebar = () => {
+        setIsSidebarOpen(false);
+        setTimeout(() => setSidebarMentor(null), 300); // Wait for animation
     };
 
     const [selectedDuration, setSelectedDuration] = useState("6 Months");
@@ -223,13 +239,21 @@ export default function Explore() {
 
             {/* Trial Booking Modal */}
             {showModal && selectedMentorForTrial && (
-                <div className="modal-overlay">
+                <div className="modal-overlay" style={{ zIndex: 10000 }}>
                     <div className="modal-content">
                         <button className="modal-close" onClick={() => setShowModal(false)}><FaTimes /></button>
                         <TrialModalContent mentor={selectedMentorForTrial} />
                     </div>
                 </div>
             )}
+
+            {/* Mentor Profile Slide-in Sidebar */}
+            <MentorProfileSidebar
+                mentor={sidebarMentor}
+                isOpen={isSidebarOpen}
+                onClose={closeSidebar}
+                onBookMock={() => openTrialModal(sidebarMentor)}
+            />
 
             <div className="explore-container">
                 {/* MAIN CONTENT SIDE (LEFT) */}
@@ -255,7 +279,12 @@ export default function Explore() {
 
                     <div className="mentors-list">
                         {sortedMentors.map(mentor => (
-                            <div key={mentor.id} className={`explore-mentor-card ${mentor.isStar ? 'star-mentor' : ''}`}>
+                            <div
+                                key={mentor.id}
+                                className={`explore-mentor-card ${mentor.isStar ? 'star-mentor' : ''}`}
+                                onClick={() => openSidebar(mentor)}
+                                style={{ cursor: 'pointer' }}
+                            >
                                 {/* Left Column: Mentor Info */}
                                 <div className="mentor-info-col">
                                     <div className="mentor-header">
@@ -294,7 +323,7 @@ export default function Explore() {
                                         </div>
                                     </div>
 
-                                    <p className="mentor-bio">{mentor.bio} <a href="#" className="read-more">Read More</a></p>
+                                    <p className="mentor-bio">{mentor.bio} <span className="read-more">Read More</span></p>
 
                                     <div className="mentor-skills">
                                         {mentor.skills.map((skill, i) => (
@@ -305,22 +334,20 @@ export default function Explore() {
 
                                     <div className="mentor-footer">
                                         <p><FaBriefcase /> For: Fresher | Working Professional</p>
-                                        <p><BsCheckCircleFill /> Targeting Domains: {mentor.targetDomains.join(", ")} | <a href="#">More</a></p>
+                                        <p><BsCheckCircleFill /> Targeting Domains: {mentor.targetDomains.join(", ")} | <a href="#" onClick={(e) => e.preventDefault()}>More</a></p>
                                     </div>
                                 </div>
 
                                 {/* Right Column: Pricing & Actions */}
                                 <div className="mentor-action-col">
-                                    <div className="duration-tabs">
-                                        {["6 Months", "3 Months", "1 Month"].map(d => (
+                                    <div className="duration-tabs" onClick={(e) => e.stopPropagation()}>
+                                        {["6 Months", "3 Month", "1 Month"].map(d => (
                                             <button
                                                 key={d}
                                                 className={`tab-btn ${selectedDuration === d ? 'active' : ''}`}
                                                 onClick={() => setSelectedDuration(d)}
                                             >
                                                 {d}
-                                                {mentor.plans[d].discount && <span className="discount-tag">Offer</span>}
-                                                {/* Note: Simplified discount tag for now, can be detailed */}
                                             </button>
                                         ))}
                                     </div>
@@ -328,7 +355,7 @@ export default function Explore() {
                                     <div className="session-features">
                                         <div className="feature-row"><span className="icon">📞</span> {mentor.sessionsPerWeek} Sessions Per Week</div>
                                         <div className="feature-row"><span className="icon">💼</span> Referrals in {mentor.referralCompanies} <span className="more-link">+12 More</span></div>
-                                        {mentor.isStar && <div className="feature-row"><span className="icon">💎</span> Detailed Curriculum Available <a href="#" className="view-link">View ↗</a></div>}
+                                        {mentor.isStar && <div className="feature-row"><span className="icon">💎</span> Detailed Curriculum Available <span className="view-link">View ↗</span></div>}
                                     </div>
 
                                     <div className="price-section">
@@ -339,8 +366,8 @@ export default function Explore() {
                                         {mentor.plans[selectedDuration].discount && <div className="discount-badge">{mentor.plans[selectedDuration].discount}</div>}
                                     </div>
 
-                                    <button className="view-profile-btn">View Profile</button>
-                                    <button className="explore-book-btn" onClick={() => openTrialModal(mentor)}>Book a Free Trial</button>
+                                    <button className="view-profile-btn" onClick={(e) => { e.stopPropagation(); openSidebar(mentor); }}>View Profile</button>
+                                    <button className="explore-book-btn" onClick={(e) => openTrialModal(mentor, e)}>Book a Free Trial</button>
                                     <div className="next-available">Next Available: <span>{mentor.nextAvailable}</span></div>
                                 </div>
                             </div>

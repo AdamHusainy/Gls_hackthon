@@ -10,6 +10,7 @@ export default function Navbar() {
     const location = useLocation();
 
     const isExplorePage = location.pathname === '/explore';
+    const isDashboard = location.pathname === '/dashboard';
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -68,18 +69,20 @@ export default function Navbar() {
                 </span>
             </div>
 
-            <ul className="nav-center">
-                <li onClick={() => navigate('/explore')}>Explore Mentors</li>
-                <li>AI Mentors</li>
-                <li>Success Stories</li>
-            </ul>
+            {!isDashboard && (
+                <ul className="nav-center">
+                    <li onClick={() => navigate('/explore')}>Explore Mentors</li>
+                    <li>AI Mentors</li>
+                    <li>Success Stories</li>
+                </ul>
+            )}
 
             <div className="nav-right" ref={dropdownRef}>
                 <button className="menu-btn" onClick={toggleMenu}>
                     <div className="menu-circle"></div>
                     {isOpen ? <FaTimes /> : <FaBars />}
                 </button>
-                {!isExplorePage && (
+                {!isExplorePage && !isDashboard && (
                     <button className="nav-btn" onClick={() => navigate('/explore')}>Find your mentor →</button>
                 )}
 
@@ -97,16 +100,9 @@ export default function Navbar() {
                             </div>
                         </div>
                         <ul className="dropdown-list">
-                            <li><FaDesktop /> My Dashboard</li>
-                            <li><FaCreditCard /> Apply Credits</li>
-                            <li>
-                                <div className="list-item-content">
-                                    <span><FaHeart /> Shortlisted Mentors</span>
-                                    <span className="badge-blue">0</span>
-                                </div>
-                            </li>
-                            <li><FaUser /> My Profile</li>
-                            <li><FaEnvelope /> My Messages</li>
+                            <li onClick={() => { setIsOpen(false); navigate('/dashboard'); }}><FaDesktop /> My Dashboard</li>
+                            <li onClick={() => { setIsOpen(false); navigate('/dashboard?view=profile'); }}><FaUser /> My Profile</li>
+                            <li onClick={() => { setIsOpen(false); navigate('/dashboard?view=messages'); }}><FaEnvelope /> My Messages</li>
                             <li><FaSignOutAlt /> Logout</li>
                         </ul>
                     </div>
