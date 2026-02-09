@@ -4,6 +4,8 @@ import Home from './components/home/home';
 import Explore from './components/explore/Explore';
 import Dashboard from './components/dashboard/Dashboard';
 import AiMentors from './components/ai-mentors/AiMentors';
+import MenteeLogin from './components/auth/MenteeLogin';
+import MentorLogin from './components/auth/MentorLogin';
 
 function App() {
   return (
@@ -13,6 +15,8 @@ function App() {
         <Route path="/explore" element={<Explore />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/ai-mentors" element={<AiMentors />} />
+        <Route path="/mentee-login" element={<MenteeLogin />} />
+        <Route path="/mentor-login" element={<MentorLogin />} />
       </Routes>
     </div>
   );
