@@ -75,6 +75,7 @@ export default function Navbar() {
                 <ul className="nav-center">
                     <li onClick={() => navigate('/explore')}>Explore Mentors</li>
                     <li onClick={() => navigate('/ai-mentors')}>AI Mentors</li>
+                    <li onClick={() => window.location.href = 'http://localhost:3000'}>Mock Interview</li>
                     <li>Success Stories</li>
                 </ul>
             )}

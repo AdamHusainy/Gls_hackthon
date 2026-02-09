@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaCheck, FaTimes, FaBook, FaVideo, FaCode, FaChevronRight, FaStar, FaFire, FaBolt, FaRegSmile, FaRegMeh, FaRegFrown } from 'react-icons/fa';
+import { FaCheck, FaTimes, FaBook, FaVideo, FaCode, FaChevronRight, FaStar, FaFire, FaBolt, FaRegSmile, FaRegMeh, FaRegFrown, FaExclamationCircle } from 'react-icons/fa';
 
 export default function RoadmapView() {
     const [selectedNode, setSelectedNode] = useState(null);
@@ -24,7 +24,7 @@ export default function RoadmapView() {
             subNodes: [
                 { id: 'c1', title: "Introduction and Styling Basics", status: "completed" },
                 { id: 'c2', title: "Text Styling", status: "in-progress" },
-                { id: 'c3', title: "Layout and Responsive Design", status: "locked" },
+                { id: 'c3', title: "Layout and Responsive Design", status: "locked", weak: true, resources: [{ title: 'Flexbox Froggy', type: 'game' }, { title: 'Grid Guide', type: 'article' }] },
             ]
         },
         {
@@ -34,7 +34,7 @@ export default function RoadmapView() {
             subNodes: [
                 { id: 'j1', title: "Basics of JavaScript", status: "skipped" },
                 { id: 'j2', title: "Intermediate JavaScript Concepts", status: "skipped" },
-                { id: 'j3', title: "Advanced JavaScript", status: "locked" },
+                { id: 'j3', title: "Advanced JavaScript", status: "locked", weak: true, resources: [{ title: 'Async/Await Guide', type: 'video' }, { title: 'Event Loop Visualized', type: 'article' }] },
                 { id: 'j4', title: "JavaScript in Web Development", status: "locked" },
             ]
         },
@@ -104,6 +104,7 @@ export default function RoadmapView() {
                                                     {sub.status === 'skipped' && <div className="dot skipped" />}
                                                 </div>
                                                 <span>{sub.title}</span>
+                                                {sub.weak && <FaExclamationCircle style={{ color: '#ef4444', marginLeft: 'auto' }} title="Weak Area - Needs Focus" />}
                                                 {sub.status === 'skipped' && <span className="skipped-label">Skipped by AI</span>}
                                             </div>
                                         </div>
@@ -158,8 +159,27 @@ export default function RoadmapView() {
 
                     {/* Resources Card */}
                     <div className="sidebar-card resources-card">
-                        <h3>Learn with Resources <span className="resource-icons">🎥📄</span></h3>
-                        <p>Contains 200+ resources curated by me</p>
+                        {selectedNode ? (
+                            <>
+                                <h3>Resources for {selectedNode.title}</h3>
+                                {selectedNode.resources ? (
+                                    <ul style={{ paddingLeft: '20px', fontSize: '13px', marginTop: '8px' }}>
+                                        {selectedNode.resources.map((res, i) => (
+                                            <li key={i} style={{ marginBottom: '4px' }}>
+                                                {res.type === 'video' ? '🎥' : res.type === 'article' ? '📄' : '🎮'} <a href="#" style={{ color: '#2563eb' }}>{res.title}</a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p>Select a specific topic to see curated resources.</p>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                <h3>Learn with Resources <span className="resource-icons">🎥📄</span></h3>
+                                <p>Select a topic to view curated resources.</p>
+                            </>
+                        )}
                     </div>
 
                 </div>

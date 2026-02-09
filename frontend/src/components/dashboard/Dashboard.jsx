@@ -3,12 +3,16 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../navbar/Navbar';
 import './Dashboard.css';
 import { FaUser, FaEnvelope, FaHistory, FaServicestack, FaArrowRight, FaClock, FaCheckCircle, FaChevronRight } from 'react-icons/fa';
-import { BsGrid1X2Fill } from "react-icons/bs";
+import { BsGrid1X2Fill, BsSpeedometer2 } from "react-icons/bs";
+import ProgressWidget from './widgets/ProgressWidget';
+import TaskWidget from './widgets/TaskWidget';
+import FeedbackWidget from './widgets/FeedbackWidget';
+import StatsWidget from './widgets/StatsWidget';
 
 export default function Dashboard() {
     const location = useLocation();
     const navigate = useNavigate();
-    const [currentView, setCurrentView] = useState('bookings');
+    const [currentView, setCurrentView] = useState('overview');
     const [messageTab, setMessageTab] = useState('all'); // 'all' or 'unread'
 
     // Mock Data for Chats
@@ -122,7 +126,7 @@ export default function Dashboard() {
         } else if (view === 'services') {
             setCurrentView('services');
         } else {
-            setCurrentView('bookings');
+            setCurrentView('overview');
         }
     }, [location.search]);
 
@@ -135,6 +139,8 @@ export default function Dashboard() {
             navigate('/dashboard?view=activity');
         } else if (view === 'services') {
             navigate('/dashboard?view=services');
+        } else if (view === 'bookings') {
+            navigate('/dashboard?view=bookings');
         } else {
             navigate('/dashboard');
         }
@@ -176,6 +182,10 @@ export default function Dashboard() {
                 {/* LEFT SIDEBAR */}
                 <aside className="dash-sidebar-left">
                     <div className="sidebar-menu">
+                        <div className={`menu-item ${currentView === 'overview' ? 'active' : ''}`} onClick={() => handleViewChange('overview')}>
+                            <BsSpeedometer2 className="menu-icon" />
+                            <span>Overview</span>
+                        </div>
                         <div className={`menu-item ${currentView === 'bookings' ? 'active' : ''}`} onClick={() => handleViewChange('bookings')}>
                             <BsGrid1X2Fill className="menu-icon" />
                             <span>Trial Bookings</span>
@@ -203,6 +213,25 @@ export default function Dashboard() {
 
                 {/* MAIN CONTENT AREA */}
                 <main className="dash-main-content">
+                    {currentView === 'overview' && (
+                        <div className="overview-view">
+                            <div className="dash-header">
+                                <h2>Welcome back, Meera! 👋</h2>
+                                <p>Here's what's happening with your mentorship journey today.</p>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '24px' }}>
+                                <div style={{ height: '280px' }}><ProgressWidget progress={65} /></div>
+                                <div style={{ height: '280px' }}><StatsWidget /></div>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
+                                <div style={{ height: '320px' }}><TaskWidget /></div>
+                                <div style={{ height: '320px' }}><FeedbackWidget /></div>
+                            </div>
+                        </div>
+                    )}
+
                     {currentView === 'bookings' && (
                         <>
                             <div className="dash-header">
