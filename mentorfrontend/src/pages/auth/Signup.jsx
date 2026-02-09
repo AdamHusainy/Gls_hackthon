@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Briefcase } from 'lucide-react';
 
+import { useAuth } from '../../context/AuthContext';
+
 const Signup = () => {
     const navigate = useNavigate();
+    const { register } = useAuth();
+    const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
@@ -15,11 +19,22 @@ const Signup = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Mock signup - replace with real logic -> redirect to onboarding
-        console.log("Signing up with:", formData);
-        navigate('/onboarding');
+        setError('');
+
+        // Register with backend (Role is 'mentor' by default in AuthContext)
+        const res = await register({
+            name: formData.fullName,
+            email: formData.email,
+            password: formData.password
+        });
+
+        if (res.success) {
+            navigate('/onboarding');
+        } else {
+            setError(res.error);
+        }
     };
 
     return (
@@ -45,6 +60,7 @@ const Signup = () => {
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                    {error && <div className="mb-4 text-red-600 text-center">{error}</div>}
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div>
                             <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">

@@ -12,7 +12,7 @@
     display: flex;
     background: #fff;
     border-radius: 24px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
     overflow: hidden;
     width: 100%;
     max-width: 1100px;
@@ -35,20 +35,21 @@
 }
 
 .login-title {
-    font-size: 28px;
-    font-weight: 700;
+    font-size: 32px;
+    font-weight: 800;
     color: #111827;
     margin-bottom: 12px;
     text-align: center;
+    letter-spacing: -0.5px;
 }
 
 .login-subtitle {
-    font-size: 14px;
+    font-size: 15px;
     color: #6b7280;
     text-align: center;
     margin-bottom: 40px;
-    line-height: 1.5;
-    max-width: 400px;
+    line-height: 1.6;
+    max-width: 420px;
     align-self: center;
 }
 
@@ -63,21 +64,27 @@
     display: flex;
     align-items: center;
     padding: 12px 20px;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s ease;
     font-family: inherit;
+    border: 1px solid #e5e7eb;
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .social-btn.google {
     background: #fff;
-    border: 1px solid #d1d5db;
     justify-content: space-between;
-    padding: 8px 16px;
+    padding: 10px 18px;
 }
 
 .social-btn.google:hover {
-    background: #f9fafb;
+    background: #fdfdfd;
+    border-color: #d1d5db;
 }
 
 .social-text {
@@ -87,26 +94,26 @@
 }
 
 .sign-in-text {
-    font-size: 12px;
+    font-size: 13px;
     color: #374151;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .email-text {
-    font-size: 11px;
+    font-size: 12px;
     color: #6b7280;
 }
 
 .google-logo-right {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     color: #ea4335;
 }
 
 .social-btn.apple {
-    background: #fff;
-    border: 1px solid #d1d5db;
-    color: #000;
+    background: #000;
+    color: #fff;
+    border: 1px solid #000;
     justify-content: center;
     gap: 10px;
     font-weight: 600;
@@ -114,7 +121,8 @@
 }
 
 .social-btn.apple:hover {
-    background: #f9fafb;
+    background: #111;
+    border-color: #111;
 }
 
 .social-icon {
@@ -125,7 +133,7 @@
     display: flex;
     align-items: center;
     text-align: center;
-    margin: 20px 0;
+    margin: 24px 0;
     color: #9ca3af;
 }
 
@@ -133,18 +141,20 @@
 .divider::after {
     content: '';
     flex: 1;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #f3f4f6;
 }
 
 .divider span {
-    padding: 0 10px;
-    font-size: 14px;
+    padding: 0 12px;
+    font-size: 13px;
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .phone-input-group label {
     display: block;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: #374151;
     margin-bottom: 8px;
@@ -153,10 +163,18 @@
 .phone-input-wrapper {
     display: flex;
     align-items: center;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    padding: 10px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px 16px;
     gap: 10px;
+    background: #f9fafb;
+    transition: all 0.2s;
+}
+
+.phone-input-wrapper:focus-within {
+    border-color: #3b82f6;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 .country-selector {
@@ -183,24 +201,27 @@
     font-size: 15px;
     flex: 1;
     color: #111827;
+    background: transparent;
 }
 
 .send-otp-btn {
     width: 100%;
-    background: #007bff;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
     color: white;
     border: none;
-    padding: 14px;
-    border-radius: 8px;
-    font-size: 15px;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     margin-top: 24px;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
 }
 
 .send-otp-btn:hover {
-    background: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
 }
 
 /* Right Side */

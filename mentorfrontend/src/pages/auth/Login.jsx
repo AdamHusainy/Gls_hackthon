@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, CheckCircle } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
     const navigate = useNavigate();
+    const { login } = useAuth();
+    const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -13,11 +16,15 @@ const Login = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Mock authentication - replace with real logic later
-        console.log("Logging in with:", formData);
-        navigate('/'); // Redirect to dashboard
+        setError('');
+        const res = await login(formData.email, formData.password);
+        if (res.success) {
+            navigate('/'); // Redirect to dashboard
+        } else {
+            setError(res.error);
+        }
     };
 
     return (
@@ -41,6 +48,7 @@ const Login = () => {
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                    {error && <div className="mb-4 text-red-600 text-center">{error}</div>}
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import api from '../../utils/api';
 import './AiMentors.css';
 import Onboarding from './Onboarding';
 import ChatInterface from './ChatInterface';
@@ -32,11 +33,30 @@ export default function AiMentors() {
         if (tab === 'chat') setStep('chat');
     };
 
-    const handleOnboardingComplete = (data) => {
+    const handleOnboardingComplete = async (data) => {
         setUserData(data);
         localStorage.setItem('aiMentorsUser', JSON.stringify(data));
-        setStep('chat');
-        setActiveTab('chat');
+        setStep('loading'); // Show loading while generating
+
+        try {
+            // Generate Roadmap
+            // We need to import api here or pass it. Assuming api utility is available or imported.
+            // But wait, api isn't imported in this file. Let's add it.
+            const res = await api.post('/ai/roadmap', { goals: data });
+            if (res.data.success) {
+                // Save roadmap to local storage or state
+                localStorage.setItem('userRoadmap', JSON.stringify(res.data.data));
+                // Pass roadmap to RoadmapView?
+                // For now, let's just go to roadmap view
+                setStep('roadmap');
+                setActiveTab('roadmap');
+            }
+        } catch (err) {
+            console.error("Roadmap generation failed", err);
+            // Fallback to chat if roadmap fails
+            setStep('chat');
+            setActiveTab('chat');
+        }
     };
 
     const handleRoadmapGenerated = () => {

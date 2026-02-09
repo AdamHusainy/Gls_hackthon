@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaPaperPlane } from 'react-icons/fa';
+import api from '../../utils/api';
 
 export default function ChatInterface({ userData, onRoadmapReady }) {
     const [messages, setMessages] = useState([]);
@@ -43,35 +44,43 @@ export default function ChatInterface({ userData, onRoadmapReady }) {
         setInputValue("");
         setIsTyping(true);
 
-        // Simulate AI processing
-        setTimeout(() => {
-            let aiResponseText = "";
-            let triggerRoadmap = false;
+        try {
+            // Prepare history for API
+            const history = messages.map(m => ({
+                role: m.sender,
+                message: m.text
+            }));
 
-            // Simple mock logic for demo
-            if (messages.length < 2) {
-                aiResponseText = "Great! I'll analyze your current skills and goals to create the best path for you. Processing your roadmap now...";
-                triggerRoadmap = true;
-            } else {
-                aiResponseText = "I'm updating your plan based on that.";
-            }
+            const res = await api.post('/ai/chat', {
+                message: newUserMsg.text,
+                history: history
+            });
 
             const newAiMsg = {
                 id: messages.length + 2,
                 sender: 'ai',
-                text: aiResponseText
+                text: res.data.data
             };
 
             setMessages(prev => [...prev, newAiMsg]);
-            setIsTyping(false);
 
-            if (triggerRoadmap) {
+            // Check if we should trigger roadmap generation (simple keyword check for now)
+            if (newUserMsg.text.toLowerCase().includes('roadmap') || newUserMsg.text.toLowerCase().includes('plan')) {
                 setTimeout(() => {
                     onRoadmapReady();
-                }, 2500); // Wait a bit so they can read the message
+                }, 2500);
             }
 
-        }, 1500);
+        } catch (err) {
+            console.error("AI Chat Error", err);
+            setMessages(prev => [...prev, {
+                id: messages.length + 2,
+                sender: 'ai',
+                text: "Sorry, I'm having trouble connecting to my brain right now. Please try again."
+            }]);
+        } finally {
+            setIsTyping(false);
+        }
     };
 
     return (

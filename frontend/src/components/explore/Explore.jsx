@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../navbar/Navbar';
 import Footer from '../footer/Footer';
 import './Explore.css';
 import { FaSearch, FaChevronDown, FaBriefcase, FaStar, FaTrophy, FaChevronRight, FaTimes, FaCrown, FaArrowRight, FaMapMarkerAlt, FaCommentAlt, FaRegClock } from "react-icons/fa";
 import { BsCheckCircleFill } from "react-icons/bs";
 import MentorProfileSidebar from './MentorProfileSidebar';
+import api from '../../utils/api';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Explore() {
+    const navigate = useNavigate();
+    const { user } = useAuth();
     const filters = {
         domain: ["Frontend", "Backend", "Fullstack", "DevOps / SRE / Cloud", "QA / Automation Testing", "Data Scientist / AI/ML", "Data Analyst"],
         companies: ["Amazon", "Microsoft", "Google", "Preplaced", "Salesforce", "Uber", "Airbnb"],
@@ -17,127 +22,53 @@ export default function Explore() {
     };
 
     // Enhanced Mentors Data
-    const mentors = [
-        {
-            id: 1,
-            name: "Aman Jaiswal",
-            role: "Senior Frontend Engineer",
-            company: "DBS",
-            companyLogo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/DBS_Bank_logo.svg/2560px-DBS_Bank_logo.svg.png",
-            prevCompany: "Amdocs",
-            img: "https://randomuser.me/api/portraits/men/32.jpg",
-            exp: "7+ years",
-            rating: 5.0,
-            reviews: 130, // converted to number for better handling if needed
-            mentees: "10+",
-            placements: 19,
-            isStar: true,
-            location: "Telangana, India",
-            languages: ["English", "Hindi"],
-            sessionsPerWeek: "1x",
-            referrals: true,
-            referralCompanies: "Top Companies",
-            bio: "I have already given and taken 450+ interviews. I have clear picture in my mind what all things you have to prepare to achieve your dream job. With my guidance, I can assure you gu...",
-            skills: ["JavaScript", "React", "DSA", "System Design", "Frontend Architecture", "LLD", "HTML", "CSS"],
-            moreSkills: "+4 More",
-            targetDomains: ["Frontend Developer"],
-            plans: {
-                "1 Month": { price: 10000, currency: "₹", total: 10000 },
-                "3 Month": { price: 10000, currency: "₹", total: 30000, discount: "" },
-                "6 Months": { price: 10000, currency: "₹", total: 60000, discount: "" }
-            },
-            nextAvailable: "Tomorrow, 07:00 PM"
-        },
-        {
-            id: 2,
-            name: "Shubham Khanna",
-            role: "Senior Software Engineer",
-            company: "Booking Holdings - Agoda",
-            companyLogo: "https://upload.wikimedia.org/wikipedia/commons/b/b0/Booking.com_logo.svg",
-            prevCompany: "ex-CRED",
-            img: "https://randomuser.me/api/portraits/men/45.jpg",
-            exp: "7+ Years",
-            rating: 5.0,
-            reviews: 60,
-            mentees: "10+",
-            placements: 10,
-            isStar: true,
-            location: "Haryana, India",
-            languages: ["English", "Hindi"],
-            sessionsPerWeek: "1x",
-            referrals: true,
-            referralCompanies: "Top Companies",
-            bio: "🚀 Senior Software Engineer @Booking.com | ex-CRED, Arcesium (D.E. Shaw) | 6+ yrs mentoring | 500+ tech interviews | DSA, LLD, HLD, mock interviews & custom prep to help you crack...",
-            skills: ["DSA", "System Design", "LLD", "HLD", "Machine Coding", "Java", "Java Springboot"],
-            targetDomains: ["Frontend Developer", "Backend Developer"],
-            plans: {
-                "1 Month": { price: 15000, currency: "₹", total: 15000 },
-                "3 Month": { price: 15000, currency: "₹", total: 45000 },
-                "6 Months": { price: 15000, currency: "₹", total: 90000 }
-            },
-            nextAvailable: "Sat Feb 14 2026"
-        },
-        {
-            id: 3,
-            name: "Rengaraj Narayanasamy",
-            role: "Senior consultant",
-            company: "Ernst and young",
-            companyLogo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Ernst_%26_Young_logo.svg/1200px-Ernst_%26_Young_logo.svg.png",
-            prevCompany: "HCL | IVL",
-            img: "https://randomuser.me/api/portraits/men/22.jpg",
-            exp: "9+ Years",
-            rating: 0,
-            reviews: 0,
-            mentees: "0",
-            placements: 0,
-            isStar: false,
-            location: "Karnataka, India",
-            languages: ["English", "Tamil", "Telugu"],
-            sessionsPerWeek: "2x",
-            referrals: true,
-            referralCompanies: "Top Companies",
-            bio: "Hi, I'm a Frontend Developer with 8 years of experience working with React.js, JavaScript, HTML, CSS, and modern frontend architecture. I help students and early-career developers...",
-            skills: ["HTML", "CSS", "React", "Typescript", "Javascript", "NodeJS", "System Design", "Frontend Architecture"],
-            moreSkills: "+3 More",
-            targetDomains: ["Frontend Developer"],
-            plans: {
-                "1 Month": { price: 2500, currency: "₹", total: 2500 },
-                "3 Month": { price: 2500, currency: "₹", total: 7500, discount: "Extra 40% OFF" },
-                "6 Months": { price: 2500, currency: "₹", total: 15000 }
-            },
-            nextAvailable: "Tomorrow, 04:00 AM"
-        },
-        {
-            id: 4,
-            name: "Bhagirath Auti",
-            role: "Technology Apprentice",
-            company: "Morgan Stanley",
-            companyLogo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Morgan_Stanley_Logo_1.svg/1200px-Morgan_Stanley_Logo_1.svg.png",
-            prevCompany: "Aspivision",
-            img: "https://randomuser.me/api/portraits/men/15.jpg",
-            exp: "3+ Years",
-            rating: 0,
-            reviews: 0,
-            mentees: "0",
-            placements: 0,
-            isStar: false,
-            location: "Maharashtra, India",
-            languages: ["English", "Hindi", "Marathi"],
-            sessionsPerWeek: "2x",
-            referrals: true,
-            referralCompanies: "Top Companies",
-            bio: "🚀 Hey there! I'm excited to be your mentor on this journey. With hands-on experience in MERN stack development, full-stack web technologies, and building real-world applications i...",
-            skills: ["React", "ReactJS", "Python", "Java", "JavaScript", "HTML", "CSS", "MERN Stack Development", "Angular"],
-            moreSkills: "+6 More",
-            targetDomains: ["Fullstack Developer"],
-            plans: {
-                "1 Month": { price: 5000, currency: "₹", total: 5000 },
-                "3 Month": { price: 5000, currency: "₹", total: 15000, discount: "Extra 30% OFF" },
-                "6 Months": { price: 5000, currency: "₹", total: 30000 }
-            },
-            nextAvailable: "Sat Feb 14 2026"
-        }
-    ];
+    const [mentors, setMentors] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchMentors = async () => {
+            try {
+                const res = await api.get('/mentors');
+                const backendMentors = res.data.data.map(m => ({
+                    id: m._id,
+                    name: m.name,
+                    role: m.mentorProfile.currentRole || "Senior Mentor",
+                    company: m.mentorProfile.company || "Tech Company",
+                    companyLogo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/DBS_Bank_logo.svg/2560px-DBS_Bank_logo.svg.png", // Placeholder
+                    prevCompany: "Ex-TechGiant",
+                    img: m.profileImage === 'no-photo.jpg' ? `https://ui-avatars.com/api/?name=${m.name}&background=random` : m.profileImage,
+                    exp: m.mentorProfile.experience || "5+ Years",
+                    rating: m.mentorProfile.rating || 5.0,
+                    reviews: 10 + Math.floor(Math.random() * 50),
+                    mentees: (m.mentorProfile.totalSessions || 0) + "+",
+                    placements: Math.floor(Math.random() * 20),
+                    isStar: m.mentorProfile.rating >= 4.8,
+                    location: m.mentorProfile.location || "India",
+                    languages: m.mentorProfile.languages || ["English"],
+                    sessionsPerWeek: "2x",
+                    referrals: true,
+                    referralCompanies: "Top Companies",
+                    bio: m.mentorProfile.bio || "Experienced mentor ready to help you achieve your career goals.",
+                    skills: m.mentorProfile.expertise || [],
+                    moreSkills: "+3 More",
+                    targetDomains: ["Frontend Developer", "Backend Developer"],
+                    plans: {
+                        "1 Month": { price: (m.mentorProfile.pricing?.hourlyRate || 50) * 100, currency: "₹", total: (m.mentorProfile.pricing?.hourlyRate || 50) * 100 },
+                        "3 Month": { price: (m.mentorProfile.pricing?.hourlyRate || 50) * 100, currency: "₹", total: (m.mentorProfile.pricing?.hourlyRate || 50) * 300, discount: "Extra 10% OFF" },
+                        "6 Months": { price: (m.mentorProfile.pricing?.hourlyRate || 50) * 100, currency: "₹", total: (m.mentorProfile.pricing?.hourlyRate || 50) * 600 }
+                    },
+                    nextAvailable: "Tomorrow, 07:00 PM"
+                }));
+                setMentors(backendMentors);
+            } catch (err) {
+                console.error("Failed to fetch mentors", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchMentors();
+    }, []);
 
     const [showModal, setShowModal] = useState(false);
     const [selectedMentorForTrial, setSelectedMentorForTrial] = useState(null);
@@ -148,6 +79,12 @@ export default function Explore() {
 
     const openTrialModal = (mentor, e) => {
         if (e) e.stopPropagation(); // Prevent Sidebar from opening if clicking Book directly
+
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+
         setSelectedMentorForTrial(mentor);
         setShowModal(true);
     };

@@ -1,16 +1,47 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaGoogle, FaApple, FaChevronDown } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
 import './MenteeLogin.css';
 
 const MenteeLogin = () => {
     const navigate = useNavigate();
-    const [phoneNumber, setPhoneNumber] = useState('');
+    const { login, register } = useAuth();
+    const [isLogin, setIsLogin] = useState(true);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: ''
+    });
+    const [error, setError] = useState('');
 
-    const handleLogin = () => {
-        // Simulate login
-        console.log('Logging in...');
-        navigate('/dashboard');
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+
+        if (isLogin) {
+            const res = await login(formData.email, formData.password);
+            if (res.success) {
+                navigate('/dashboard');
+            } else {
+                setError(res.error);
+            }
+        } else {
+            const res = await register({
+                name: formData.name,
+                email: formData.email,
+                password: formData.password
+            });
+            if (res.success) {
+                navigate('/dashboard');
+            } else {
+                setError(res.error);
+            }
+        }
     };
 
     return (
@@ -22,52 +53,77 @@ const MenteeLogin = () => {
                         <span style={{ color: '#2563eb', fontWeight: '800', fontSize: '24px' }}>ii</span>
                     </div>
 
-                    <h1 className="login-title">Sign in to get started</h1>
+                    <h1 className="login-title">{isLogin ? 'Sign in to get started' : 'Create an account'}</h1>
                     <p className="login-subtitle">
                         Begin your journey to your dream job with mentors who are among the top 1% in the tech industry.
                     </p>
 
-                    <div className="social-buttons">
-                        <button className="social-btn google" onClick={handleLogin}>
-                            <FaGoogle className="social-icon" />
-                            <div className="social-text">
-                                <span className="sign-in-text">Sign in as jhon</span>
-                                <span className="email-text">jhonmacrin30@gmail.com</span>
+                    {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+
+                    <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+                        {!isLogin && (
+                            <div className="phone-input-group" style={{ marginBottom: '15px' }}>
+                                <label>Full Name</label>
+                                <div className="phone-input-wrapper">
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        placeholder="John Doe"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        required
+                                        style={{ width: '100%', padding: '10px', border: 'none', outline: 'none' }}
+                                    />
+                                </div>
                             </div>
-                            <FaGoogle className="google-logo-right" />
-                        </button>
+                        )}
 
-                        <button className="social-btn apple" onClick={handleLogin}>
-                            <FaApple className="social-icon" />
-                            <span>Continue with Apple</span>
-                        </button>
-                    </div>
-
-                    <div className="divider">
-                        <span>OR</span>
-                    </div>
-
-                    <div className="phone-input-group">
-                        <label>Phone Number (whatsapp)</label>
-                        <div className="phone-input-wrapper">
-                            <div className="country-selector">
-                                <img src="https://flagcdn.com/w20/in.png" alt="India" width="20" />
-                                <FaChevronDown className="chevron-icon" />
+                        <div className="phone-input-group" style={{ marginBottom: '15px' }}>
+                            <label>Email Address</label>
+                            <div className="phone-input-wrapper">
+                                <input
+                                    type="email"
+                                    name="email"
+                                    placeholder="john@example.com"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                    style={{ width: '100%', padding: '10px', border: 'none', outline: 'none' }}
+                                />
                             </div>
-                            <span className="country-code">+91</span>
-                            <input
-                                type="tel"
-                                placeholder=""
-                                value={phoneNumber}
-                                onChange={(e) => setPhoneNumber(e.target.value)}
-                            />
                         </div>
-                    </div>
 
-                    <button className="send-otp-btn" onClick={handleLogin}>
-                        Send OTP
-                    </button>
+                        <div className="phone-input-group" style={{ marginBottom: '20px' }}>
+                            <label>Password</label>
+                            <div className="phone-input-wrapper">
+                                <input
+                                    type="password"
+                                    name="password"
+                                    placeholder="********"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                    style={{ width: '100%', padding: '10px', border: 'none', outline: 'none' }}
+                                />
+                            </div>
+                        </div>
+
+                        <button type="submit" className="send-otp-btn">
+                            {isLogin ? 'Sign In' : 'Sign Up'}
+                        </button>
+                    </form>
+
+                    <p style={{ marginTop: '15px', textAlign: 'center' }}>
+                        {isLogin ? "Don't have an account? " : "Already have an account? "}
+                        <span
+                            style={{ color: '#2563eb', cursor: 'pointer', fontWeight: 'bold' }}
+                            onClick={() => setIsLogin(!isLogin)}
+                        >
+                            {isLogin ? 'Sign Up' : 'Sign In'}
+                        </span>
+                    </p>
                 </div>
+
 
                 {/* Right Side - Testimonial */}
                 <div className="login-right">

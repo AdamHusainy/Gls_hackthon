@@ -1,54 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaCheck, FaTimes, FaBook, FaVideo, FaCode, FaChevronRight, FaStar, FaFire, FaBolt, FaRegSmile, FaRegMeh, FaRegFrown, FaExclamationCircle } from 'react-icons/fa';
+
+import api from '../../utils/api';
 
 export default function RoadmapView() {
     const [selectedNode, setSelectedNode] = useState(null);
+    const [roadmapData, setRoadmapData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Hierarchical Roadmap Data
-    const roadmapData = [
-        {
-            id: 'html',
-            title: "HTML",
-            status: "completed",
-            subNodes: [
-                { id: 'h1', title: "Basic HTML Concepts", status: "completed" },
-                { id: 'h2', title: "HTML Media", status: "completed" },
-                { id: 'h3', title: "HTML Table", status: "completed" },
-                { id: 'h4', title: "Form and Debugging", status: "completed" },
-            ]
-        },
-        {
-            id: 'css',
-            title: "CSS",
-            status: "in-progress",
-            subNodes: [
-                { id: 'c1', title: "Introduction and Styling Basics", status: "completed" },
-                { id: 'c2', title: "Text Styling", status: "in-progress" },
-                { id: 'c3', title: "Layout and Responsive Design", status: "locked", weak: true, resources: [{ title: 'Flexbox Froggy', type: 'game' }, { title: 'Grid Guide', type: 'article' }] },
-            ]
-        },
-        {
-            id: 'js',
-            title: "JavaScript (JS)",
-            status: "locked",
-            subNodes: [
-                { id: 'j1', title: "Basics of JavaScript", status: "skipped" },
-                { id: 'j2', title: "Intermediate JavaScript Concepts", status: "skipped" },
-                { id: 'j3', title: "Advanced JavaScript", status: "locked", weak: true, resources: [{ title: 'Async/Await Guide', type: 'video' }, { title: 'Event Loop Visualized', type: 'article' }] },
-                { id: 'j4', title: "JavaScript in Web Development", status: "locked" },
-            ]
-        },
-        {
-            id: 'react',
-            title: "ReactJS",
-            status: "locked",
-            subNodes: [
-                { id: 'r1', title: "Introduction to React", status: "skipped" },
-                { id: 'r2', title: "Advanced React Concepts", status: "locked" },
-                { id: 'r3', title: "Modern React Practices", status: "locked" },
-            ]
-        }
-    ];
+    useEffect(() => {
+        const fetchRoadmap = async () => {
+            try {
+                const res = await api.get('/roadmaps/my');
+                if (res.data.data && res.data.data.nodes) {
+                    setRoadmapData(res.data.data.nodes);
+                }
+            } catch (err) {
+                console.error("Failed to fetch roadmap", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchRoadmap();
+    }, []);
+
+    if (loading) return <div className="text-center p-10">Loading roadmap...</div>;
+    if (!roadmapData.length) return <div className="text-center p-10">No roadmap found. Please generate one first.</div>;
 
     return (
         <div className="roadmap-wrapper fade-in">

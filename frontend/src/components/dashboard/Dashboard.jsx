@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../navbar/Navbar';
+import UserProfile from './UserProfile';
 import './Dashboard.css';
 import { FaUser, FaEnvelope, FaHistory, FaServicestack, FaArrowRight, FaClock, FaCheckCircle, FaChevronRight } from 'react-icons/fa';
 import { BsGrid1X2Fill, BsSpeedometer2 } from "react-icons/bs";
@@ -8,6 +9,8 @@ import ProgressWidget from './widgets/ProgressWidget';
 import TaskWidget from './widgets/TaskWidget';
 import FeedbackWidget from './widgets/FeedbackWidget';
 import StatsWidget from './widgets/StatsWidget';
+import { useAuth } from '../../context/AuthContext';
+import api from '../../utils/api';
 
 export default function Dashboard() {
     const location = useLocation();
@@ -16,96 +19,101 @@ export default function Dashboard() {
     const [messageTab, setMessageTab] = useState('all'); // 'all' or 'unread'
 
     // Mock Data for Chats
-    const [chats, setChats] = useState([
-        {
-            id: 1,
-            name: "Mudassar Hakim",
-            avatar: "https://randomuser.me/api/portraits/men/86.jpg",
-            date: "Nov 5, 2025",
-            unread: false,
-            messages: [
-                { id: 1, sender: 'them', text: 'How do platforms like Netflix...', time: '10:00 AM' },
-                {
-                    id: 2,
-                    sender: 'them',
-                    type: 'linkedin',
-                    content: {
-                        image: 'https://media.licdn.com/dms/image/v2/D5622AQG-8-2-1-/feedshare-shrink_800/feedshare-shrink_800/0/1712476562006?e=2147483647&v=beta&t=8-2-1-',
-                        title: 'How Netflix recommends movies: A simple guide to Content-Based Filtering | Mudassar Ahamer Hakim',
-                        desc: '# How does Netflix know what to recommend you next? No — it\'s not magic. Yes — it can be explained simply.',
-                        domain: 'linkedin.com'
-                    },
-                    time: '10:05 AM'
-                }
-            ]
-        },
-        {
-            id: 2,
-            name: "Aman Kumar",
-            avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-            date: "Jun 22, 2025",
-            unread: true,
-            messages: [
-                { id: 1, sender: 'them', text: 'Hi are you joining?', time: '09:30 AM' },
-                { id: 2, sender: 'me', text: 'Yes, just a moment.', time: '09:32 AM' }
-            ]
-        },
-        {
-            id: 3,
-            name: "Sumitav Acharya",
-            avatar: "https://randomuser.me/api/portraits/men/12.jpg",
-            date: "Jun 22, 2025",
-            unread: false,
-            messages: [
-                { id: 1, sender: 'them', text: 'Thank you for booking...', time: 'Yesterday' }
-            ]
-        },
-        {
-            id: 4,
-            name: "Nikhil Losalka",
-            avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-            date: "Jun 11, 2025",
-            unread: false,
-            messages: [
-                { id: 1, sender: 'them', text: 'are u joining ?', time: 'Jun 11' }
-            ]
-        },
-        {
-            id: 5,
-            name: "Chetana Bollini",
-            avatar: "https://randomuser.me/api/portraits/women/65.jpg",
-            date: "Jun 10, 2025",
-            unread: false,
-            messages: [
-                { id: 1, sender: 'them', text: '📎 ibrahim_resume (9).pdf', time: 'Jun 10' }
-            ]
-        }
-    ]);
-
-    const [activeChatId, setActiveChatId] = useState(1);
+    const [chats, setChats] = useState([]);
+    const [activeChatId, setActiveChatId] = useState(null);
     const [newMessage, setNewMessage] = useState('');
+    const [activity, setActivity] = useState([]);
 
-    const activeChat = chats.find(c => c.id === activeChatId);
-    const filteredChats = messageTab === 'unread' ? chats.filter(c => c.unread) : chats;
+    // Fetch Chats
+    useEffect(() => {
+        if (currentView === 'messages') {
+            const fetchChats = async () => {
+                try {
+                    const res = await api.get('/messages/conversations');
+                    // Map backend conversation format to frontend
+                    const mappedChats = res.data.data.map(c => ({
+                        id: c.user._id,
+                        name: c.user.name,
+                        avatar: c.user.profileImage && c.user.profileImage !== 'no-photo.jpg' ? c.user.profileImage : `https://ui-avatars.com/api/?name=${c.user.name}&background=random`,
+                        date: new Date(c.lastMessage.createdAt).toLocaleDateString(),
+                        unread: c.unreadCount > 0,
+                        messages: [], // We'll fetch full messages on click
+                        lastMessage: c.lastMessage.content
+                    }));
+                    setChats(mappedChats);
+                    if (mappedChats.length > 0 && !activeChatId) {
+                        setActiveChatId(mappedChats[0].id);
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch chats", err);
+                }
+            };
+            fetchChats();
+        }
+    }, [currentView]);
 
-    const handleSendMessage = () => {
-        if (!newMessage.trim()) return;
+    // Fetch Messages for Active Chat
+    useEffect(() => {
+        if (activeChatId) {
+            const fetchMessages = async () => {
+                try {
+                    // This endpoint needs to be implemented or we filter client side.
+                    // For now, let's fetch ALL messages and filter client side as we don't have conversation-specific endpoint yet (simplified)
+                    const res = await api.get('/messages');
+                    const allMessages = res.data.data;
 
-        const updatedChats = chats.map(chat => {
-            if (chat.id === activeChatId) {
-                return {
-                    ...chat,
-                    messages: [
-                        ...chat.messages,
-                        { id: Date.now(), sender: 'me', text: newMessage, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
-                    ]
-                };
-            }
-            return chat;
-        });
+                    const conversationMessages = allMessages.filter(m =>
+                        (m.sender._id === activeChatId || m.recipient._id === activeChatId)
+                    ).map(m => ({
+                        id: m._id,
+                        sender: m.sender._id === user._id ? 'me' : 'them',
+                        text: m.content,
+                        time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    }));
 
-        setChats(updatedChats);
-        setNewMessage('');
+                    setChats(prev => prev.map(c =>
+                        c.id === activeChatId ? { ...c, messages: conversationMessages } : c
+                    ));
+                } catch (err) {
+                    console.error("Failed to fetch messages", err);
+                }
+            };
+            fetchMessages();
+        }
+    }, [activeChatId]);
+
+
+    const handleSendMessage = async () => {
+        if (!newMessage.trim() || !activeChatId) return;
+
+        try {
+            const res = await api.post('/messages', {
+                recipientId: activeChatId,
+                content: newMessage
+            });
+
+            const sentMsg = res.data.data;
+            const formattedMsg = {
+                id: sentMsg._id,
+                sender: 'me',
+                text: sentMsg.content,
+                time: new Date(sentMsg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+
+            setChats(prev => prev.map(chat => {
+                if (chat.id === activeChatId) {
+                    return {
+                        ...chat,
+                        messages: [...chat.messages, formattedMsg],
+                        lastMessage: newMessage
+                    };
+                }
+                return chat;
+            }));
+            setNewMessage('');
+        } catch (err) {
+            console.error("Failed to send message", err);
+        }
     };
 
     const handleKeyDown = (e) => {
@@ -125,6 +133,8 @@ export default function Dashboard() {
             setCurrentView('activity');
         } else if (view === 'services') {
             setCurrentView('services');
+        } else if (view === 'bookings') {
+            setCurrentView('bookings');
         } else {
             setCurrentView('overview');
         }
@@ -146,33 +156,74 @@ export default function Dashboard() {
         }
     };
 
-    // State to simulate bookings availability
-    // Toggle this to test both views
-    // State to simulate bookings availability
-    // Toggle this to test both views
-    const [bookings, setBookings] = useState([
-        // {
-        //     name: "Nikhil Losalka",
-        //     img: "https://randomuser.me/api/portraits/men/22.jpg",
-        //     company: "Apple",
-        //     exp: "13+ Years of",
-        //     status: "Completed",
-        //     date: "Jun 11, 2025",
-        //     time: "6:00 PM"
-        // },
-        // {
-        //     name: "Sanya Gupta",
-        //     img: "https://randomuser.me/api/portraits/women/44.jpg",
-        //     company: "Google",
-        //     exp: "8+ Years of",
-        //     status: "Scheduled",
-        //     date: "Jun 15, 2025",
-        //     time: "7:30 PM"
-        // }
-    ]);
+    const { user } = useAuth();
+    const [bookings, setBookings] = useState([]);
+    const [dashboardData, setDashboardData] = useState({
+        progress: 0,
+        tasks: [],
+        feedback: null,
+        stats: null
+    });
+
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                const res = await api.get('/dashboard/student');
+                setDashboardData(res.data.data);
+            } catch (err) {
+                console.error("Failed to fetch dashboard data", err);
+            }
+        };
+
+        const fetchSessions = async () => {
+            try {
+                const res = await api.get('/sessions');
+                const rawSessions = res.data.data;
+                const mappedSessions = rawSessions.map(session => ({
+                    name: session.mentor?.name || "Mentor",
+                    img: session.mentor?.profileImage && session.mentor.profileImage !== 'no-photo.jpg' ? session.mentor.profileImage : `https://ui-avatars.com/api/?name=${session.mentor?.name || 'Mentor'}&background=random`,
+                    company: session.mentor?.mentorProfile?.company || "Tech Company",
+                    exp: session.mentor?.mentorProfile?.experience || "Experienced",
+                    status: session.status.charAt(0).toUpperCase() + session.status.slice(1),
+                    date: new Date(session.startTime).toLocaleDateString(),
+                    time: new Date(session.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    isCompleted: session.status === 'completed',
+                    rawDate: new Date(session.startTime)
+                }));
+                setBookings(mappedSessions);
+
+                // Generate Activity Feed
+                const activityItems = [];
+                // From Sessions
+                rawSessions.forEach(s => {
+                    activityItems.push({
+                        type: 'session',
+                        title: `Session ${s.status === 'completed' ? 'Completed' : 'Scheduled'}`,
+                        desc: `With ${s.mentor?.name}`,
+                        time: new Date(s.startTime),
+                        timestamp: new Date(s.startTime).getTime()
+                    });
+                });
+
+                // Sort by date desc
+                activityItems.sort((a, b) => b.timestamp - a.timestamp);
+                setActivity(activityItems);
+
+            } catch (err) {
+                console.error("Failed to fetch sessions", err);
+            }
+        };
+
+        if (user) {
+            fetchDashboardData();
+            fetchSessions();
+        }
+    }, [user]);
 
     // Determine if we have active bookings
     const hasBookings = bookings.length > 0;
+    const activeChat = chats.find(c => c.id === activeChatId);
+    const filteredChats = messageTab === 'unread' ? chats.filter(c => c.unread) : chats;
 
     return (
         <div className="dashboard-page">
@@ -216,18 +267,18 @@ export default function Dashboard() {
                     {currentView === 'overview' && (
                         <div className="overview-view">
                             <div className="dash-header">
-                                <h2>Welcome back, Meera! 👋</h2>
+                                <h2>Welcome back, {user?.name || 'User'}! 👋</h2>
                                 <p>Here's what's happening with your mentorship journey today.</p>
                             </div>
 
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '24px' }}>
-                                <div style={{ height: '280px' }}><ProgressWidget progress={65} /></div>
-                                <div style={{ height: '280px' }}><StatsWidget /></div>
+                                <div style={{ height: '280px' }}><ProgressWidget progress={dashboardData.progress} /></div>
+                                <div style={{ height: '280px' }}><StatsWidget stats={dashboardData.stats} /></div>
                             </div>
 
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
-                                <div style={{ height: '320px' }}><TaskWidget /></div>
-                                <div style={{ height: '320px' }}><FeedbackWidget /></div>
+                                <div style={{ height: '320px' }}><TaskWidget tasks={dashboardData.tasks} /></div>
+                                <div style={{ height: '320px' }}><FeedbackWidget feedback={dashboardData.feedback} /></div>
                             </div>
                         </div>
                     )}
@@ -328,50 +379,7 @@ export default function Dashboard() {
 
                     {currentView === 'profile' && (
                         /* VIEW: PROFILE */
-                        <div className="profile-view">
-                            {/* Profile Header */}
-                            <div className="profile-section-header">
-                                <div>
-                                    <h2>My Profile</h2>
-                                    <p>Your Profile has integral data about you, which is shared with the mentors as well. Please keep all your information updated.</p>
-                                </div>
-                                <button className="edit-btn">✎ Edit Profile</button>
-                            </div>
-
-                            <div className="profile-card">
-                                <div className="pc-user-info">
-                                    <div className="pc-avatar"></div>
-                                    <div className="pc-details">
-                                        <h3>Meera Acharya <span className="tag-fresher">FRESHER</span></h3>
-                                        <p>📞 +916356326648 &nbsp;|&nbsp; ✉️ meeraacharya2807@gmail.com</p>
-                                    </div>
-                                </div>
-                                <div className="pc-target-row">
-                                    🎯 <strong>Target :</strong> Frontend Developer in Product Based.
-                                </div>
-                            </div>
-
-                            {/* Overview */}
-                            <div className="profile-section">
-                                <h3>Overview</h3>
-                                <p className="section-desc">Basic data about your education, profession and credentials.</p>
-                                <div className="info-row">
-                                    💬 <strong>Languages Spoken :</strong>
-                                </div>
-                            </div>
-
-                            {/* Goals */}
-                            <div className="profile-section">
-                                <div className="profile-section-header">
-                                    <h3>Goals & Expectations</h3>
-                                    <button className="edit-btn">✎ Edit Goals</button>
-                                </div>
-                                <p className="section-desc">Things you would like to achieve through Long Term Mentorship</p>
-                                <div className="info-row">
-                                    🎯 <strong>Main Goal :</strong> In college, preparing for on/off campus placements
-                                </div>
-                            </div>
-                        </div>
+                        <UserProfile />
                     )}
 
                     {currentView === 'messages' && (
@@ -410,7 +418,7 @@ export default function Dashboard() {
                                                         <h4>{chat.name}</h4>
                                                         <span>{chat.date}</span>
                                                     </div>
-                                                    <p>{chat.messages[chat.messages.length - 1]?.text || 'Started a chat'}</p>
+                                                    <p>{chat.lastMessage || 'Started a chat'}</p>
                                                 </div>
                                             </div>
                                         ))
@@ -498,22 +506,24 @@ export default function Dashboard() {
                                 <p>Track your recent interactions and updates.</p>
                             </div>
                             <div className="no-bookings-card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
-                                    <div style={{ background: '#e0f2fe', padding: '8px', borderRadius: '50%', color: '#0284c7' }}><FaUser /></div>
-                                    <div>
-                                        <h4 style={{ margin: '0 0 4px 0', fontSize: '14px' }}>Profile Updated</h4>
-                                        <p style={{ margin: 0, fontSize: '12px', color: '#64748b' }}>You updated your bio and skills.</p>
-                                    </div>
-                                    <span style={{ marginLeft: 'auto', fontSize: '11px', color: '#94a3b8' }}>2 hours ago</span>
-                                </div>
-                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                    <div style={{ background: '#f0fdf4', padding: '8px', borderRadius: '50%', color: '#16a34a' }}><FaCheckCircle /></div>
-                                    <div>
-                                        <h4 style={{ margin: '0 0 4px 0', fontSize: '14px' }}>Login Successful</h4>
-                                        <p style={{ margin: 0, fontSize: '12px', color: '#64748b' }}>Logged in from Chrome on MacOS.</p>
-                                    </div>
-                                    <span style={{ marginLeft: 'auto', fontSize: '11px', color: '#94a3b8' }}>5 hours ago</span>
-                                </div>
+                                {activity.length > 0 ? (
+                                    activity.map((item, idx) => (
+                                        <div key={idx} style={{ display: 'flex', gap: '12px', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+                                            <div style={{ background: item.type === 'session' ? '#e0f2fe' : '#f0fdf4', padding: '8px', borderRadius: '50%', color: item.type === 'session' ? '#0284c7' : '#16a34a' }}>
+                                                {item.type === 'session' ? <FaUser /> : <FaCheckCircle />}
+                                            </div>
+                                            <div>
+                                                <h4 style={{ margin: '0 0 4px 0', fontSize: '14px' }}>{item.title}</h4>
+                                                <p style={{ margin: 0, fontSize: '12px', color: '#64748b' }}>{item.desc}</p>
+                                            </div>
+                                            <span style={{ marginLeft: 'auto', fontSize: '11px', color: '#94a3b8' }}>
+                                                {item.time ? item.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                                            </span>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div style={{ textAlign: 'center', padding: '20px' }}>No recent activity</div>
+                                )}
                             </div>
                         </div>
                     )}

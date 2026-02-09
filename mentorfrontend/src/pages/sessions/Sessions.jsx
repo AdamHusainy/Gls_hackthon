@@ -1,19 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, User, CheckCircle, MoreHorizontal } from 'lucide-react';
+import api from '../../utils/api';
 
 const Sessions = () => {
     const [activeTab, setActiveTab] = useState('upcoming');
+    const [sessions, setSessions] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Mock Sessions Data
-    const sessions = [
-        { id: 1, mentee: 'Alex Morgan', topic: 'System Design Mock Interview', time: 'Today, 4:00 PM', status: 'upcoming', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' },
-        { id: 2, mentee: 'Sarah Jones', topic: 'Frontend Portfolio Review', time: 'Tomorrow, 10:00 AM', status: 'upcoming', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' },
-        { id: 3, mentee: 'David Chen', topic: 'Resume Review', time: 'Wed, Feb 12, 2:00 PM', status: 'upcoming', img: 'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' },
-        { id: 4, mentee: 'Emily White', topic: 'Career Guidance', time: 'Yesterday', status: 'completed', img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' },
-        { id: 5, mentee: 'Michael Brown', topic: 'DSA: Graphs', time: 'Last Week', status: 'completed', img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' },
-    ];
+    useEffect(() => {
+        const fetchSessions = async () => {
+            try {
+                const res = await api.get('/sessions');
+                const mappedSessions = res.data.data.map(session => ({
+                    id: session._id,
+                    mentee: session.student?.name || "Student",
+                    topic: "Mentorship Session", // Backend doesn't store topic yet, usage placeholder
+                    time: new Date(session.startTime).toLocaleString(),
+                    status: session.status, // 'scheduled', 'completed', 'cancelled'
+                    img: session.student?.profileImage && session.student.profileImage !== 'no-photo.jpg' ? session.student.profileImage : `https://ui-avatars.com/api/?name=${session.student?.name || 'Student'}&background=random`
+                }));
+                setSessions(mappedSessions);
+            } catch (err) {
+                console.error("Failed to fetch sessions", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSessions();
+    }, []);
 
-    const filteredSessions = sessions.filter(s => s.status === activeTab);
+    const filteredSessions = sessions.filter(s => {
+        if (activeTab === 'upcoming') return s.status === 'scheduled';
+        if (activeTab === 'completed') return s.status === 'completed';
+        return false;
+    });
 
     return (
         <div className="space-y-6">
@@ -30,8 +50,8 @@ const Sessions = () => {
                     <button
                         onClick={() => setActiveTab('upcoming')}
                         className={`${activeTab === 'upcoming'
-                                ? 'border-indigo-500 text-indigo-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            ? 'border-indigo-500 text-indigo-600'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
                     >
                         Upcoming Sessions
@@ -39,8 +59,8 @@ const Sessions = () => {
                     <button
                         onClick={() => setActiveTab('completed')}
                         className={`${activeTab === 'completed'
-                                ? 'border-indigo-500 text-indigo-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            ? 'border-indigo-500 text-indigo-600'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
                     >
                         Past History

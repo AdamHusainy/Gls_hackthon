@@ -1,25 +1,75 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, Calendar, DollarSign, Star, TrendingUp, Clock, AlertCircle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
-// Mock Data
-const data = [
-    { name: 'Mon', sessions: 2 },
-    { name: 'Tue', sessions: 4 },
-    { name: 'Wed', sessions: 3 },
-    { name: 'Thu', sessions: 5 },
-    { name: 'Fri', sessions: 4 },
-    { name: 'Sat', sessions: 6 },
-    { name: 'Sun', sessions: 3 },
-];
+import api from '../../utils/api';
+import { useAuth } from '../../context/AuthContext';
 
 const DashboardHome = () => {
+    const { user } = useAuth();
+    const [stats, setStats] = useState({
+        mentees: 0,
+        upcoming: 0,
+        earnings: 0,
+        rating: 0
+    });
+    const [sessions, setSessions] = useState([]);
+    const [chartData, setChartData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await api.get('/sessions');
+                const allSessions = res.data.data;
+
+                // Calculate Stats
+                const uniqueMentees = new Set(allSessions.map(s => s.student._id)).size;
+                const upcomingSessions = allSessions.filter(s => new Date(s.startTime) > new Date() && s.status === 'scheduled');
+                const completedSessions = allSessions.filter(s => s.status === 'completed');
+                // Mock earnings: $50 per session
+                const earnings = completedSessions.length * 50;
+
+                setStats({
+                    mentees: uniqueMentees,
+                    upcoming: upcomingSessions.length,
+                    earnings: earnings,
+                    rating: user?.mentorProfile?.rating || 5.0
+                });
+
+                setSessions(upcomingSessions.slice(0, 5)); // Show top 5 upcoming
+
+                // Calculate Chart Data (Sessions per day)
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const sessionCounts = { Sun: 0, Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0 };
+
+                allSessions.forEach(s => {
+                    const dayName = days[new Date(s.startTime).getDay()];
+                    sessionCounts[dayName]++;
+                });
+
+                const dynamicChartData = days.map(day => ({
+                    name: day,
+                    sessions: sessionCounts[day]
+                }));
+                // Set chart data state (need to add state for it)
+                setChartData(dynamicChartData);
+
+            } catch (err) {
+                console.error("Failed to fetch dashboard data", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (user) fetchData();
+    }, [user]);
+
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
                 <div className="flex space-x-3">
-                    <span className="text-sm text-gray-500 self-center">Last updated: Just now</span>
+                    <span className="text-sm text-gray-500 self-center">Welcome, {user?.name}</span>
                 </div>
             </div>
 
@@ -27,33 +77,33 @@ const DashboardHome = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
                     title="Total Mentees"
-                    value="12"
+                    value={stats.mentees}
                     icon={Users}
-                    trend="+2 this month"
+                    trend="Lifetime"
                     trendUp={true}
                     color="blue"
                 />
                 <StatCard
                     title="Upcoming Sessions"
-                    value="8"
+                    value={stats.upcoming}
                     icon={Calendar}
-                    trend="Next: Today, 4pm"
+                    trend="Next 7 Days"
                     trendUp={true}
                     color="purple"
                 />
                 <StatCard
-                    title="Monthly Earnings"
-                    value="$1,250"
+                    title="Estimated Earnings"
+                    value={`$${stats.earnings}`}
                     icon={DollarSign}
-                    trend="+15% vs last month"
+                    trend="Based on completed sessions"
                     trendUp={true}
                     color="green"
                 />
                 <StatCard
                     title="Avg. Rating"
-                    value="4.9"
+                    value={stats.rating}
                     icon={Star}
-                    trend="From 45 reviews"
+                    trend="From profile"
                     trendUp={true}
                     color="yellow"
                 />
@@ -65,7 +115,7 @@ const DashboardHome = () => {
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Sessions Overview</h3>
                     <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={data}>
+                            <BarChart data={chartData}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                 <XAxis dataKey="name" axisLine={false} tickLine={false} />
                                 <YAxis axisLine={false} tickLine={false} />
@@ -82,24 +132,19 @@ const DashboardHome = () => {
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Upcoming Sessions</h3>
                     <div className="space-y-4 flex-1 overflow-y-auto pr-2" style={{ maxHeight: '300px' }}>
-                        <SessionCard
-                            name="Alex Morgan"
-                            topic="Mock Interview: System Design"
-                            time="Today, 4:00 PM"
-                            img="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        />
-                        <SessionCard
-                            name="Sarah Jones"
-                            topic="Frontend Mentorship"
-                            time="Tomorrow, 10:00 AM"
-                            img="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        />
-                        <SessionCard
-                            name="David Chen"
-                            topic="Resume Review"
-                            time="Wed, 2:00 PM"
-                            img="https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        />
+                        {sessions.length > 0 ? (
+                            sessions.map(session => (
+                                <SessionCard
+                                    key={session._id}
+                                    name={session.student?.name || "Student"}
+                                    topic="Mentorship Session"
+                                    time={new Date(session.startTime).toLocaleString()}
+                                    img={`https://ui-avatars.com/api/?name=${session.student?.name || 'Student'}&background=random`}
+                                />
+                            ))
+                        ) : (
+                            <p className="text-gray-500 text-sm">No upcoming sessions.</p>
+                        )}
                     </div>
                     <button className="mt-4 w-full py-2 text-sm text-indigo-600 font-medium hover:bg-indigo-50 rounded-md transition-colors">
                         View All Sessions
@@ -112,21 +157,9 @@ const DashboardHome = () => {
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Pending Actions</h3>
                 <div className="space-y-3">
                     <ActionItem
-                        title="Review Task: 'Design Instagram Database'"
-                        mentee="Alex Morgan"
-                        due="Due Today"
-                        type="urgent"
-                    />
-                    <ActionItem
-                        title="Submit Feedback for recent session"
-                        mentee="Sarah Jones"
-                        due="Due Yesterday"
-                        type="overdue"
-                    />
-                    <ActionItem
-                        title="Approve Reschedule Request"
-                        mentee="Emily White"
-                        due="Received 2 hrs ago"
+                        title="Complete Profile"
+                        mentee="System"
+                        due="Recommended"
                         type="normal"
                     />
                 </div>
